@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { DashboardProfileMenu } from "../pages/dashboard/Profile";
-import brandLogo from "../assets/logo.png";
+
+import brandLogo from "../assets/Logo.png";
 
 const navSections = [
   {
