@@ -2,6 +2,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { LogOut, PenSquare, User, UserRound } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import { useBalance } from "../../hooks/useBalance";
 
 const AVATAR_STORAGE_PREFIX = "ug_profile_avatar:";
 const CONTACT_STORAGE_PREFIX = "ug_profile_contact:";
@@ -278,6 +279,7 @@ export default function Profile() {
   const [error, setError] = useState("");
   const [avatarDataUrl, setAvatarDataUrl] = useState(null);
   const [uploadError, setUploadError] = useState("");
+  const { balance, loading: balanceLoading } = useBalance();
 
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState(null);
@@ -650,7 +652,13 @@ export default function Profile() {
               <p className="text-sm font-bold text-slate-900">Net Worth</p>
               <p className="text-xs text-slate-600 mt-1">
                 Your current worth is{" "}
-                <span className="font-semibold text-slate-900">$0</span>
+                {balanceLoading ? (
+                  <span className="font-semibold text-slate-400">Loading...</span>
+                ) : (
+                  <span className="font-semibold text-slate-900">
+                    ${balance?.toLocaleString() ?? "0"}
+                  </span>
+                )}
               </p>
             </div>
           </div>
