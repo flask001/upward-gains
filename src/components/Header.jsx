@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import slide1 from "../assets/image/Img1.jpg";
 import slide2 from "../assets/image/Img2.jpg";
 import slide3 from "../assets/image/Img3.jpg";
+import { Link } from "react-router-dom";
 
 export default function HeaderSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -94,7 +95,7 @@ ${index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-10 opacity
                 shadow-xl
                 hover:scale-105"
               >
-                Start Investing
+              <Link to="/register">Start Investing</Link>
               </button>
 
             </div>
