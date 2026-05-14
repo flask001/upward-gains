@@ -13,6 +13,7 @@ import PageHeader from "../../components/dashboard/PageHeader";
 import TransactionFeed from "../../components/dashboard/TransactionFeed";
 import { useBalance } from "../../hooks/useBalance";
 import { useCommission } from "../../hooks/useCommission";
+import { useTransactions } from "../../hooks/useTransactions";
 
 function formatUsd(balance, loading) {
   if (loading) return "…";
@@ -77,6 +78,18 @@ export default function DashboardHome() {
   const [role, setRole] = useState(null);
   const { balance, loading: balanceLoading } = useBalance();
   const { totalCommission, loading: commissionLoading } = useCommission();
+  const { transactions } = useTransactions();
+
+  // Calculate actual earnings from profit transactions (today's earnings)
+  const today = new Date().toDateString();
+  const todayProfit = transactions
+    .filter(t => t.type === 'profit' && new Date(t.created_at).toDateString() === today)
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  // Calculate total earnings from all profit transactions
+  const totalEarnings = transactions
+    .filter(t => t.type === 'profit')
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
 
   useEffect(() => {
     let mounted = true;
@@ -135,7 +148,7 @@ export default function DashboardHome() {
         />
         <StatCardRound
           label="Today Profit"
-          value="$0"
+          value={formatUsd(todayProfit, false)}
           icon={MessageCircle}
           circleClass="bg-amber-400 shadow-inner"
         />
@@ -149,7 +162,7 @@ export default function DashboardHome() {
         <StatCardAccent
           title="Earnings"
           titleColor="text-orange-500"
-          value="$0"
+          value={formatUsd(totalEarnings, false)}
           subtitle="Total Earnings"
           dotClass="bg-orange-500"
           icon={Layers}
