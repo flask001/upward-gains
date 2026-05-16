@@ -53,7 +53,7 @@ export default function AboutSection() {
           {/* Title */}
           <h2 className="text-3xl sm:text-3xl md:text-4xl font-bold mb-0 leading-tight">
             <span className="text-emerald-600">About</span>{" "}
-            <span className="text-gray-900">Upward-Gain</span>
+            <span className="text-gray-900">Upwards-Gains</span>
           </h2>
 
            {/* Content */}
@@ -62,7 +62,7 @@ export default function AboutSection() {
      A modern investment platform built for clarity, strategy, and
               sustainable financial growth.
           
-              Upward-Gain combines advanced financial tools with a user-first
+              Upwards-Gains combines advanced financial tools with a user-first
               approach to help individuals navigate investment opportunities
               with confidence. Our platform is designed to simplify complex
               strategies while maintaining full transparency.
@@ -76,7 +76,7 @@ export default function AboutSection() {
 
             <p>
               Whether you're exploring your first steps or refining your
-              portfolio, Upward-Gain equips you with the tools, clarity, and
+              portfolio, Upwards-Gains equips you with the tools, clarity, and
               control needed to move forward with purpose.
             </p>
           </div>

@@ -4,7 +4,7 @@ import { supabase } from "../services/supabaseClient";
 
 const RESET_REDIRECT =
   import.meta.env.DEV === true
-    ? "https://upward-gains.com/reset-password"
+    ? "https://upwards-gains.com/reset-password"
     : `${window.location.origin}/reset-password`;
 
 export default function ForgotPassword() {

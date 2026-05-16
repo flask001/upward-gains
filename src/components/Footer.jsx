@@ -37,11 +37,11 @@ export default function Footer() {
         <div className="flex items-center gap-0 mb-12">
           <img
             src={Logo}
-            alt="Upward Gain"
+            alt="Upwards Gains"
             className="h-10 w-10 object-contain"
           />
           <span className="text-white text-xl font-semibold tracking-wide">
-            Upward-<span className="text-emerald-400">Gain</span>
+            Upwards-<span className="text-emerald-400">Gains</span>
           </span>
         </div>
 
@@ -142,7 +142,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-6 text-center text-sm text-gray-500">
-          Copyright © {new Date().getFullYear()} upward-gain All Rights Reserved
+          Copyright © {new Date().getFullYear()} Upwards-Gains All Rights Reserved
         </div>
 
       </div>
