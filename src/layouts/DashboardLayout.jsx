@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   User,
   X,
+  Layers,
 } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { DashboardProfileMenu } from "../pages/dashboard/Profile";
@@ -57,8 +58,8 @@ const navSections = [
   {
     heading: "EARNINGS",
     items: [
-      { to: "/dashboard/earnings", label: "Earnings", icon: PiggyBank },
       { to: "/dashboard/commission", label: "Commission", icon: LineChart },
+      { to: "/dashboard/earnings", label: "Earnings", icon: PiggyBank },
     ],
   },
 ];
@@ -180,7 +181,7 @@ export default function DashboardLayout() {
       />
 
       <aside
-        className={`fixed top-0 left-0 z-50 flex w-[260px] shrink-0 flex-col border-r border-white/10 bg-black transform transition-transform duration-200 max-lg:h-[100dvh] max-lg:max-h-[100dvh] lg:static lg:z-0 lg:min-h-screen lg:h-auto lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 flex w-[260px] shrink-0 flex-col border-r border-white/10 bg-black transform transition-transform duration-200 max-lg:h-[100dvh] max-lg:max-h-[100dvh] lg:static lg:z-0 lg:min-h-screen lg:h-auto lg:translate-x-0 lg:transition-none ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

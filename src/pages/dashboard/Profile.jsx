@@ -586,7 +586,7 @@ export default function Profile() {
       ) : null}
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,340px)_1fr] gap-6 lg:gap-8 items-start">
-        <div className="rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_-12px_rgba(15,23,42,0.12)] p-6 sm:p-8">
+        <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm p-6 sm:p-8 will-change-auto">
           <div className="flex flex-col items-center">
             <div className="relative">
               <div className="h-36 w-36 sm:h-40 sm:w-40 rounded-2xl overflow-hidden bg-amber-500 flex items-center justify-center shadow-inner ring-2 ring-amber-400/30">
@@ -664,7 +664,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_-12px_rgba(15,23,42,0.12)] p-6 sm:p-8 min-h-[200px]">
+        <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm p-6 sm:p-8 min-h-[200px] will-change-auto">
           <SectionTitle>Referral ID</SectionTitle>
           <FieldRow
             label="Ref"

@@ -36,7 +36,7 @@ export default function TransactionFeed({ limit = 12 }) {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm will-change-auto">
       <h3 className="text-sm font-bold uppercase tracking-wide text-slate-800 mb-4">
         Live transactions
       </h3>

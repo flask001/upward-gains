@@ -26,7 +26,7 @@ function formatUsd(balance, loading) {
 
 function StatCardRound({ icon: Icon, label, value, circleClass }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/70 shadow-[0_4px_20px_-8px_rgba(15,23,42,0.15)] p-6 flex flex-col items-center text-center gap-4">
+    <div className="bg-white rounded-2xl border border-slate-200/70 shadow-sm p-6 flex flex-col items-center text-center gap-4 will-change-auto">
       <div
         className={`h-14 w-14 rounded-full flex items-center justify-center ${circleClass}`}
       >
@@ -54,7 +54,7 @@ function StatCardAccent({
   iconTint,
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/70 shadow-[0_4px_20px_-8px_rgba(15,23,42,0.15)] p-6 flex items-start gap-4">
+    <div className="bg-white rounded-2xl border border-slate-200/70 shadow-sm p-6 flex items-start gap-4 will-change-auto">
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-bold ${titleColor}`}>{title}</p>
         <p className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
