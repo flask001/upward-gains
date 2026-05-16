@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Eye,
   Layers,
   LineChart,
   MessageCircle,
@@ -172,22 +171,11 @@ export default function DashboardHome() {
           title="Withdrawable"
           titleColor="text-slate-700"
           value={formatUsd(balance, balanceLoading)}
-          subtitle="Balance"
+          subtitle="Available Balance"
           dotClass="bg-blue-500"
           icon={WalletCards}
           iconTint="bg-fuchsia-50 text-fuchsia-500"
         />
-        <div className="sm:col-span-2 xl:col-span-1">
-          <StatCardAccent
-            title="Withdrawal"
-            titleColor="text-teal-600"
-            value={formatUsd(balance, balanceLoading)}
-            subtitle="Available"
-            dotClass="bg-teal-500"
-            icon={Eye}
-            iconTint="bg-teal-50 text-teal-500"
-          />
-        </div>
 
         <div className="sm:col-span-2 xl:col-span-3">
           <TransactionFeed limit={15} />

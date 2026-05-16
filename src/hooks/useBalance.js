@@ -38,7 +38,10 @@ export function useBalance() {
         setLoading(false);
         return;
       }
-      await refresh(uid);
+      const { balance: b, error: err } = await getBalance(uid);
+      if (err) setError(err.message);
+      setBalance(b ?? 0);
+      setLoading(false);
     }
 
     init();
@@ -48,8 +51,13 @@ export function useBalance() {
     } = supabase.auth.onAuthStateChange((_e, session) => {
       const uid = session?.user?.id ?? null;
       setUserId(uid);
-      if (uid) refresh(uid);
-      else {
+      if (uid) {
+        getBalance(uid).then(({ balance: b, error: err }) => {
+          if (err) setError(err.message);
+          setBalance(b ?? 0);
+          setLoading(false);
+        });
+      } else {
         setBalance(0);
         setLoading(false);
       }
@@ -59,7 +67,7 @@ export function useBalance() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [refresh]);
+  }, []);
 
   return { balance, loading, error, refresh: () => refresh(userId), userId };
 }

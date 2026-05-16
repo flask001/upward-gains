@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../services/supabaseClient";
 import { listTransactionsForUser } from "../services/transactionService";
 
@@ -48,23 +48,25 @@ export function useCommission() {
       }
       setLoading(false);
 
-      // Subscribe to live transaction updates
+      // Subscribe to live transaction updates (only INSERT events for commission type)
       channel = supabase
         .channel(`commission-live-${uid}`)
         .on(
           "postgres_changes",
           {
-            event: "*",
+            event: "INSERT",
             schema: "public",
             table: "transactions",
             filter: `user_id=eq.${uid}`,
           },
-          async () => {
-            // Reload all transactions when any change occurs
-            const { data: refreshedData, error: refreshErr } = await listTransactionsForUser({ limit: 1000 });
-            if (!refreshErr && !cancelled) {
-              const commission = calculateCommission(refreshedData || []);
-              setTotalCommission(commission);
+          async (payload) => {
+            // Only reload if the new transaction is a commission type
+            if (payload.new?.type === 'commission') {
+              const { data: refreshedData, error: refreshErr } = await listTransactionsForUser({ limit: 1000 });
+              if (!refreshErr && !cancelled) {
+                const commission = calculateCommission(refreshedData || []);
+                setTotalCommission(commission);
+              }
             }
           }
         )
