@@ -189,6 +189,7 @@ export function DashboardProfileMenu({
   roleLabelText,
   initial,
   onSignOut,
+  userImage,
 }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
@@ -211,12 +212,16 @@ export function DashboardProfileMenu({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white shadow-sm ring-2 ring-transparent transition hover:ring-orange-300/60 sm:h-10 sm:w-10 sm:text-sm"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white shadow-sm ring-2 ring-transparent transition hover:ring-orange-300/60 sm:h-10 sm:w-10 sm:text-sm overflow-hidden"
         aria-expanded={open}
         aria-haspopup="true"
         aria-label="Account menu"
       >
-        {letter}
+        {userImage ? (
+          <img src={userImage} alt="User" className="h-full w-full object-cover" />
+        ) : (
+          letter
+        )}
       </button>
       {open ? (
         <div
@@ -228,8 +233,12 @@ export function DashboardProfileMenu({
             aria-hidden
           />
           <div className="relative bg-gradient-to-br from-blue-600 via-blue-600 to-violet-600 px-5 pb-6 pt-7 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-orange-500 text-2xl font-bold text-white shadow-md">
-              {letter}
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-orange-500 text-2xl font-bold text-white shadow-md overflow-hidden">
+              {userImage ? (
+                <img src={userImage} alt="User" className="h-full w-full object-cover" />
+              ) : (
+                letter
+              )}
             </div>
             <p className="mt-3 text-lg font-bold text-white">{showName}</p>
             <p className="text-sm font-normal text-white/90">{roleLabelText}</p>

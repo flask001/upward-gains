@@ -1,43 +1,42 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
-  BadgeCheck,
-  Banknote,
-  BarChart3,
   Bell,
-  FileWarning,
-  HandCoins,
-  Home,
-  LineChart,
   LogOut,
   Mail,
   Maximize2,
   Menu,
-  PiggyBank,
   Search,
   ShieldCheck,
-  User,
   X,
-  Layers,
 } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { DashboardProfileMenu } from "../pages/dashboard/Profile";
 
 import brandLogo from "../assets/Logo.png";
+import homeIcon from "../assets/image/Dashboard-image/home.png";
+import userIcon from "../assets/image/Dashboard-image/user.png";
+import investIcon from "../assets/image/Dashboard-image/invest.png";
+import invest2Icon from "../assets/image/Dashboard-image/invest2.png";
+import approvedIcon from "../assets/image/Dashboard-image/approved.png";
+import unpaidIcon from "../assets/image/Dashboard-image/unpaid.png";
+import commissionIcon from "../assets/image/Dashboard-image/commission.png";
+import earningIcon from "../assets/image/Dashboard-image/earning.png";
+import cashWithdrawalIcon from "../assets/image/Dashboard-image/cash-withdrawal.png";
 
 const navSections = [
   {
     heading: "DASHBOARD",
     items: [
-      { to: "/dashboard", end: true, label: "Dashboard", icon: Home },
-      { to: "/dashboard/profile", label: "Profile", icon: User },
+      { to: "/dashboard", end: true, label: "Dashboard", image: homeIcon },
+      { to: "/dashboard/profile", label: "Profile", image: userIcon },
     ],
   },
   {
     heading: "ACTIONS",
     items: [
-      { to: "/dashboard/invest-now", label: "Invest Now", icon: HandCoins },
-      { to: "/dashboard/my-plans", label: "My Plans", icon: BarChart3 },
+      { to: "/dashboard/invest-now", label: "Invest Now", image: investIcon },
+      { to: "/dashboard/my-plans", label: "My Plans", image: invest2Icon },
     ],
   },
   {
@@ -46,20 +45,20 @@ const navSections = [
       {
         to: "/dashboard/verified-invoice",
         label: "Verified Invoice",
-        icon: BadgeCheck,
+        image: approvedIcon,
       },
       {
         to: "/dashboard/unpaid-invoice",
         label: "Unpaid Invoice",
-        icon: FileWarning,
+        image: unpaidIcon,
       },
     ],
   },
   {
     heading: "EARNINGS",
     items: [
-      { to: "/dashboard/commission", label: "Commission", icon: LineChart },
-      { to: "/dashboard/earnings", label: "Earnings", icon: PiggyBank },
+      { to: "/dashboard/commission", label: "Commission", image: commissionIcon },
+      { to: "/dashboard/earnings", label: "Earnings", image: earningIcon },
     ],
   },
 ];
@@ -227,7 +226,7 @@ export default function DashboardLayout() {
                 — {section.heading}
               </p>
               <ul className="space-y-0.5">
-                {section.items.map(({ to, label, icon: Icon, end }) => (
+                {section.items.map(({ to, label, image, end }) => (
                   <li key={to}>
                     <NavLink
                       to={to}
@@ -238,7 +237,7 @@ export default function DashboardLayout() {
                       }
                     >
                       <span className="shrink-0 text-amber-400/90">
-                        <Icon className="h-5 w-5 stroke-[2]" />
+                        <img src={image} alt={label} className="h-5 w-5" />
                       </span>
                       {label}
                     </NavLink>
@@ -262,7 +261,7 @@ export default function DashboardLayout() {
                   }
                 >
                   <span className="shrink-0 text-amber-400/90">
-                    <Banknote className="h-5 w-5 stroke-[2]" />
+                    <img src={cashWithdrawalIcon} alt="Withdrawal" className="h-5 w-5" />
                   </span>
                   Withdrawal
                 </NavLink>
@@ -379,6 +378,7 @@ export default function DashboardLayout() {
               roleLabelText={isAdmin ? "Admin" : "Investor"}
               initial={initial}
               onSignOut={handleLogout}
+              userImage={userIcon}
             />
             <button
               type="button"
