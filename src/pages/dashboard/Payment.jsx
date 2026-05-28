@@ -191,7 +191,7 @@ export default function Payment() {
         if (invoiceId) {
           channel = supabase
             .channel(`invoice_${invoiceId}`)
-            .on('postgres_changes', 
+            .on('postgres_changes',
               {
                 event: '*',
                 schema: 'public',
@@ -199,14 +199,17 @@ export default function Payment() {
                 filter: `id=eq.${invoiceId}`
               },
               (payload) => {
-                console.log('Invoice update received:', payload);
+                console.log('📥 Invoice update received:', payload);
                 if (payload.new && mounted) {
                   setInvoice(payload.new);
                 }
               }
             )
             .subscribe((status) => {
-              console.log('Subscription status:', status);
+              console.log('📡 Invoice subscription status:', status);
+              if (status === 'CHANNEL_ERROR') {
+                console.error('❌ Invoice channel error');
+              }
             });
         }
 

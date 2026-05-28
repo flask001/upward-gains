@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { plans } from "../components/Plans";
@@ -17,6 +17,8 @@ import {
   listWithdrawalsAdmin,
   rejectWithdrawal,
 } from "../services/withdrawService";
+import { getCountryFlag } from "../services/countryDetectionService";
+import { formatLastSeen, isUserOnline } from "../hooks/useUserActivity";
 
 function formatDate(value) {
   if (!value) return "—";
@@ -69,6 +71,7 @@ export default function AdminDashboard() {
 
   const [profitBusy, setProfitBusy] = useState(false);
   const [profitMsg, setProfitMsg] = useState("");
+  const channelRef = useRef(null);
 
   const profileById = useMemo(() => {
     const m = {};
@@ -150,6 +153,37 @@ export default function AdminDashboard() {
 
     boot();
 
+    // Set up realtime subscription for profiles table
+    const channel = supabase
+      .channel('admin-profiles-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+        },
+        (payload) => {
+          console.log('🔄 Profile change detected:', payload);
+          // Refresh profiles when any change occurs
+          if (mounted) {
+            loadProfiles();
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Admin profiles subscription status:', status);
+        if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Admin profiles channel error');
+        } else if (status === 'TIMED_OUT') {
+          console.error('⏱️ Admin profiles channel timed out');
+        } else if (status === 'CLOSED') {
+          console.log('🔌 Admin profiles channel closed');
+        }
+      });
+
+    channelRef.current = channel;
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -161,6 +195,9 @@ export default function AdminDashboard() {
       console.log("🧹 AdminDashboard useEffect cleanup");
       mounted = false;
       subscription.unsubscribe();
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
     };
   }, []);
 
@@ -392,6 +429,9 @@ export default function AdminDashboard() {
                   <thead className="bg-black/30 text-gray-400 uppercase text-xs tracking-wide">
                     <tr>
                       <th className="px-4 py-3 font-medium">Email</th>
+                      <th className="px-4 py-3 font-medium">Country</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium">Last Seen</th>
                       <th className="px-4 py-3 font-medium">Role</th>
                       <th className="px-4 py-3 font-medium">Invoices</th>
                       <th className="px-4 py-3 font-medium">Joined</th>
@@ -404,7 +444,7 @@ export default function AdminDashboard() {
                     {rows.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={5}
+                          colSpan={8}
                           className="px-4 py-8 text-center text-gray-500"
                         >
                           No profiles found.
@@ -414,10 +454,41 @@ export default function AdminDashboard() {
                       rows.map((row) => {
                         const isSelf = row.id === currentUserId;
                         const disabled = busyId === row.id;
+                        const online = isUserOnline(row.last_seen) || row.is_online;
+                        const flag = getCountryFlag(row.country_code);
                         return (
                           <tr key={row.id} className="hover:bg-white/5">
                             <td className="px-4 py-3 font-medium text-white break-all max-w-[220px]">
                               {row.email ?? "—"}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                {flag && <span className="text-xl">{flag}</span>}
+                                <span className="text-gray-300 text-sm">
+                                  {row.country_name || "—"}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`h-2.5 w-2.5 rounded-full ${
+                                    online ? "bg-emerald-500" : "bg-gray-500"
+                                  }`}
+                                />
+                                <span
+                                  className={
+                                    online
+                                      ? "text-emerald-400 text-xs font-medium"
+                                      : "text-gray-500 text-xs"
+                                  }
+                                >
+                                  {online ? "Online" : "Offline"}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-xs">
+                              {formatLastSeen(row.last_seen)}
                             </td>
                             <td className="px-4 py-3">
                               <span

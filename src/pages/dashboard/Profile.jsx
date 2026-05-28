@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { LogOut, PenSquare, User, UserRound } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { useBalance } from "../../hooks/useBalance";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import { getUserCountry, getCountryFlag } from "../../services/countryDetectionService";
 
 const AVATAR_STORAGE_PREFIX = "ug_profile_avatar:";
 const CONTACT_STORAGE_PREFIX = "ug_profile_contact:";
@@ -295,6 +297,10 @@ export default function Profile() {
   const [createdAt, setCreatedAt] = useState(null);
   const [role, setRole] = useState("user");
   const [meta, setMeta] = useState({});
+  const [countryData, setCountryData] = useState(null);
+
+  // Track user activity
+  useUserActivity(userId);
 
   const [contactFirst, setContactFirst] = useState("");
   const [contactLast, setContactLast] = useState("");
@@ -409,7 +415,7 @@ export default function Profile() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role, created_at, email")
+        .select("role, created_at, email, country_code, country_name")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -417,6 +423,20 @@ export default function Profile() {
 
       if (profile?.role != null) setRole(profile.role);
       if (profile?.created_at) setCreatedAt(profile.created_at);
+
+      // Load country data
+      if (profile?.country_code) {
+        setCountryData({
+          countryCode: profile.country_code,
+          countryName: profile.country_name,
+        });
+      } else {
+        // Detect country if not set
+        const detected = await getUserCountry(user.id);
+        if (detected) {
+          setCountryData(detected);
+        }
+      }
 
       setLoading(false);
     }
@@ -644,6 +664,12 @@ export default function Profile() {
           <p className="text-center text-sm text-slate-500 mt-1">
             {roleLabel(role)}
           </p>
+          {countryData?.countryCode && (
+            <div className="mt-2 flex items-center justify-center gap-2">
+              <span className="text-2xl">{getCountryFlag(countryData.countryCode)}</span>
+              <span className="text-sm text-slate-600">{countryData.countryName}</span>
+            </div>
+          )}
 
           <div className="mt-8">
             <h3 className="text-sm font-bold text-slate-900">Bio</h3>

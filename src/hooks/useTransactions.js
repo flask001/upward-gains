@@ -57,10 +57,16 @@ export function useTransactions(options = {}) {
             filter: `user_id=eq.${uid}`,
           },
           (payload) => {
+            console.log('📥 Transaction INSERT received:', payload);
             if (payload.new) pushIncoming(payload.new);
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('📡 Transactions subscription status:', status);
+          if (status === 'CHANNEL_ERROR') {
+            console.error('❌ Transactions channel error');
+          }
+        });
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {

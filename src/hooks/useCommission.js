@@ -60,6 +60,7 @@ export function useCommission() {
             filter: `user_id=eq.${uid}`,
           },
           async (payload) => {
+            console.log('📥 Commission transaction INSERT received:', payload);
             // Only reload if the new transaction is a commission type
             if (payload.new?.type === 'commission') {
               const { data: refreshedData, error: refreshErr } = await listTransactionsForUser({ limit: 1000 });
@@ -70,7 +71,12 @@ export function useCommission() {
             }
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('📡 Commission subscription status:', status);
+          if (status === 'CHANNEL_ERROR') {
+            console.error('❌ Commission channel error');
+          }
+        });
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
