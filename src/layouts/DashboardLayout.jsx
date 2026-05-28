@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { DashboardProfileMenu } from "../pages/dashboard/Profile";
+import { useUserActivity } from "../hooks/useUserActivity";
+import { getUserCountry } from "../services/countryDetectionService";
 
 import brandLogo from "../assets/Logo.png";
 import homeIcon from "../assets/image/Dashboard-image/home.png";
@@ -94,11 +96,15 @@ function isAdminRole(role) {
 
 export default function DashboardLayout() {
   const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   /** null | "message" | "notification" — header icon modals */
   const [headerModal, setHeaderModal] = useState(null);
   const navigate = useNavigate();
+
+  // Track user activity across all dashboard pages
+  useUserActivity(userId);
 
   const initial = useMemo(
     () => (email?.trim() ? email.trim()[0].toUpperCase() : "U"),
@@ -119,11 +125,17 @@ export default function DashboardLayout() {
       const user = session?.user;
       if (!mounted) return;
       setEmail(user?.email ?? "");
+      setUserId(user?.id ?? null);
 
       if (!user?.id) {
         setIsAdmin(false);
         return;
       }
+
+      // Detect and save user country if not already set
+      getUserCountry(user.id).catch((err) => {
+        console.error('Error detecting user country:', err);
+      });
 
       const { data: profile } = await supabase
         .from("profiles")

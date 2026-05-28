@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { LogOut, PenSquare, User, UserRound } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { useBalance } from "../../hooks/useBalance";
-import { useUserActivity } from "../../hooks/useUserActivity";
 import { getUserCountry, getCountryFlag } from "../../services/countryDetectionService";
 
 const AVATAR_STORAGE_PREFIX = "ug_profile_avatar:";
@@ -298,9 +297,6 @@ export default function Profile() {
   const [role, setRole] = useState("user");
   const [meta, setMeta] = useState({});
   const [countryData, setCountryData] = useState(null);
-
-  // Track user activity
-  useUserActivity(userId);
 
   const [contactFirst, setContactFirst] = useState("");
   const [contactLast, setContactLast] = useState("");
