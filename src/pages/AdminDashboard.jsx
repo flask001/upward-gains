@@ -424,98 +424,226 @@ export default function AdminDashboard() {
             {loading ? (
               <p className="p-8 text-center text-gray-400 text-sm">Loading…</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-gray-200 min-w-[640px]">
-                  <thead className="bg-black/30 text-gray-400 uppercase text-xs tracking-wide">
-                    <tr>
-                      <th className="px-4 py-3 font-medium">Email</th>
-                      <th className="px-4 py-3 font-medium">Country</th>
-                      <th className="px-4 py-3 font-medium">Status</th>
-                      <th className="px-4 py-3 font-medium">Last Seen</th>
-                      <th className="px-4 py-3 font-medium">Role</th>
-                      <th className="px-4 py-3 font-medium">Invoices</th>
-                      <th className="px-4 py-3 font-medium">Joined</th>
-                      <th className="px-4 py-3 font-medium text-right">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/10">
-                    {rows.length === 0 ? (
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-sm text-gray-200">
+                    <thead className="bg-black/30 text-gray-400 uppercase text-xs tracking-wide">
                       <tr>
-                        <td
-                          colSpan={8}
-                          className="px-4 py-8 text-center text-gray-500"
-                        >
-                          No profiles found.
-                        </td>
+                        <th className="px-4 py-3 font-medium">Email</th>
+                        <th className="px-4 py-3 font-medium">Country</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Last Seen</th>
+                        <th className="px-4 py-3 font-medium">Role</th>
+                        <th className="px-4 py-3 font-medium">Invoices</th>
+                        <th className="px-4 py-3 font-medium">Joined</th>
+                        <th className="px-4 py-3 font-medium text-right">
+                          Actions
+                        </th>
                       </tr>
-                    ) : (
-                      rows.map((row) => {
-                        const isSelf = row.id === currentUserId;
-                        const disabled = busyId === row.id;
-                        const online = isUserOnline(row.last_seen) || row.is_online;
-                        const flag = getCountryFlag(row.country_code);
-                        return (
-                          <tr key={row.id} className="hover:bg-white/5">
-                            <td className="px-4 py-3 font-medium text-white break-all max-w-[220px]">
-                              {row.email ?? "—"}
-                            </td>
-                            <td className="px-4 py-3">
+                    </thead>
+                    <tbody className="divide-y divide-white/10">
+                      {rows.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={8}
+                            className="px-4 py-8 text-center text-gray-500"
+                          >
+                            No profiles found.
+                          </td>
+                        </tr>
+                      ) : (
+                        rows.map((row) => {
+                          const isSelf = row.id === currentUserId;
+                          const disabled = busyId === row.id;
+                          const online = isUserOnline(row.last_seen) || row.is_online;
+                          const flag = getCountryFlag(row.country_code);
+                          return (
+                            <tr key={row.id} className="hover:bg-white/5">
+                              <td className="px-4 py-3 font-medium text-white break-all max-w-[220px]">
+                                {row.email ?? "—"}
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  {flag && <span className="text-xl">{flag}</span>}
+                                  <span className="text-gray-300 text-sm">
+                                    {row.country_name || "—"}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className={`h-2.5 w-2.5 rounded-full ${
+                                      online ? "bg-emerald-500" : "bg-gray-500"
+                                    }`}
+                                  />
+                                  <span
+                                    className={
+                                      online
+                                        ? "text-emerald-400 text-xs font-medium"
+                                        : "text-gray-500 text-xs"
+                                    }
+                                  >
+                                    {online ? "Online" : "Offline"}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-xs">
+                                {formatLastSeen(row.last_seen)}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span
+                                  className={
+                                    row.role === "admin"
+                                      ? "text-emerald-400"
+                                      : "text-gray-300"
+                                  }
+                                >
+                                  {row.role ?? "user"}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-gray-300">
+                                {invoiceCounts[row.id] ?? 0}
+                              </td>
+                              <td className="px-4 py-3 text-gray-400 whitespace-nowrap">
+                                {formatDate(row.created_at)}
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex flex-wrap justify-end gap-2">
+                                  <button
+                                    type="button"
+                                    disabled={disabled || row.role === "admin"}
+                                    onClick={() => promote(row.id)}
+                                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition"
+                                  >
+                                    Promote
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={
+                                      disabled ||
+                                      row.role !== "admin" ||
+                                      isSelf
+                                    }
+                                    onClick={() => demote(row.id)}
+                                    className="px-3 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 disabled:opacity-40 disabled:cursor-not-allowed text-black text-xs font-semibold transition"
+                                  >
+                                    Demote
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={disabled || isSelf}
+                                    onClick={() => removeProfile(row.id)}
+                                    className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4 p-4">
+                  {rows.length === 0 ? (
+                    <p className="text-center text-gray-500 text-sm py-8">
+                      No profiles found.
+                    </p>
+                  ) : (
+                    rows.map((row) => {
+                      const isSelf = row.id === currentUserId;
+                      const disabled = busyId === row.id;
+                      const online = isUserOnline(row.last_seen) || row.is_online;
+                      const flag = getCountryFlag(row.country_code);
+                      return (
+                        <div key={row.id} className="bg-black/20 rounded-xl p-4 border border-white/10">
+                          <div className="space-y-3">
+                            {/* Email */}
+                            <div className="flex justify-between items-start gap-2">
+                              <span className="text-gray-400 text-xs">Email</span>
+                              <span className="text-white text-sm font-medium break-all text-right">
+                                {row.email ?? "—"}
+                              </span>
+                            </div>
+
+                            {/* Country & Status */}
+                            <div className="flex justify-between items-center">
                               <div className="flex items-center gap-2">
-                                {flag && <span className="text-xl">{flag}</span>}
+                                {flag && <span className="text-lg">{flag}</span>}
                                 <span className="text-gray-300 text-sm">
                                   {row.country_name || "—"}
                                 </span>
                               </div>
-                            </td>
-                            <td className="px-4 py-3">
                               <div className="flex items-center gap-2">
                                 <span
-                                  className={`h-2.5 w-2.5 rounded-full ${
+                                  className={`h-2 w-2 rounded-full ${
                                     online ? "bg-emerald-500" : "bg-gray-500"
                                   }`}
                                 />
                                 <span
                                   className={
                                     online
-                                      ? "text-emerald-400 text-xs font-medium"
-                                      : "text-gray-500 text-xs"
+                                    ? "text-emerald-400 text-xs font-medium"
+                                    : "text-gray-500 text-xs"
                                   }
                                 >
                                   {online ? "Online" : "Offline"}
                                 </span>
                               </div>
-                            </td>
-                            <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-xs">
-                              {formatLastSeen(row.last_seen)}
-                            </td>
-                            <td className="px-4 py-3">
+                            </div>
+
+                            {/* Role & Invoices */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400 text-xs">Role</span>
                               <span
                                 className={
                                   row.role === "admin"
-                                    ? "text-emerald-400"
-                                    : "text-gray-300"
+                                    ? "text-emerald-400 text-sm font-medium"
+                                    : "text-gray-300 text-sm"
                                 }
                               >
                                 {row.role ?? "user"}
                               </span>
-                            </td>
-                            <td className="px-4 py-3 text-gray-300">
-                              {invoiceCounts[row.id] ?? 0}
-                            </td>
-                            <td className="px-4 py-3 text-gray-400 whitespace-nowrap">
-                              {formatDate(row.created_at)}
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex flex-wrap justify-end gap-2">
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400 text-xs">Invoices</span>
+                              <span className="text-gray-300 text-sm">
+                                {invoiceCounts[row.id] ?? 0}
+                              </span>
+                            </div>
+
+                            {/* Last Seen & Joined */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400 text-xs">Last Seen</span>
+                              <span className="text-gray-400 text-xs">
+                                {formatLastSeen(row.last_seen)}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400 text-xs">Joined</span>
+                              <span className="text-gray-400 text-xs">
+                                {formatDate(row.created_at)}
+                              </span>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="pt-3 border-t border-white/10">
+                              <div className="grid grid-cols-3 gap-2">
                                 <button
                                   type="button"
                                   disabled={disabled || row.role === "admin"}
                                   onClick={() => promote(row.id)}
-                                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition"
+                                  className="px-2 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition"
                                 >
-                                  Promote to Admin
+                                  Promote
                                 </button>
                                 <button
                                   type="button"
@@ -525,27 +653,27 @@ export default function AdminDashboard() {
                                     isSelf
                                   }
                                   onClick={() => demote(row.id)}
-                                  className="px-3 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 disabled:opacity-40 disabled:cursor-not-allowed text-black text-xs font-semibold transition"
+                                  className="px-2 py-2 rounded-lg bg-yellow-600 hover:bg-yellow-500 disabled:opacity-40 disabled:cursor-not-allowed text-black text-xs font-semibold transition"
                                 >
-                                  Demote to User
+                                  Demote
                                 </button>
                                 <button
                                   type="button"
                                   disabled={disabled || isSelf}
                                   onClick={() => removeProfile(row.id)}
-                                  className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition"
+                                  className="px-2 py-2 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition"
                                 >
-                                  Delete User
+                                  Delete
                                 </button>
                               </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </>
             )}
           </div>
         ) : null}
